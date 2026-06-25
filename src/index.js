@@ -11,6 +11,7 @@ import { errorHandler, notFound } from './middleware/errorHandler.js';
 import { sanitizeRequest } from './middleware/validation.js';
 import logger from './utils/logger.js';
 import { initSocket } from './socket/index.js';
+import { startHealthCheckCron } from './cron/healthCheckCron.js';
 import authRoutes from './routes/authRoutes.js';
 import workspaceRoutes from './routes/workspaceRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
@@ -25,12 +26,10 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: true,
+  credentials: true,
+}));
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -78,6 +77,7 @@ async function startServer() {
     server.listen(PORT, () => {
       logger.info(`CollabSpace server running on port ${PORT}`);
       logger.info('WebSocket server ready');
+      startHealthCheckCron(PORT);
     });
   } catch (error) {
     logger.error({ err: error }, 'Failed to start server');
