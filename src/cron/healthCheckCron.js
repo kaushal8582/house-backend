@@ -2,7 +2,7 @@ import cron from 'node-cron';
 import logger from '../utils/logger.js';
 
 export function startHealthCheckCron(port) {
-  const healthUrl = process.env.HEALTH_CHECK_URL || `http://localhost:${port}/api/health`;
+  const healthUrl =`https://house-backend-k0ie.onrender.com/api/health`
 
   const checkHealth = async () => {
     try {
